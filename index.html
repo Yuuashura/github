@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebuah Pesan Untukmu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS untuk halaman, pop-up, dan animasi */
+        
+        /* Mengatur dasar halaman */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Wadah utama dengan latar belakang gradasi */
+        #love-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #480048, #C04848);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Gaya untuk ucapan pembuka (efek ketik) */
+        #greeting {
+            color: white;
+            font-size: 3.5vw; /* Ukuran font responsif */
+            text-shadow: 0 0 10px #ff69b4;
+            text-align: center;
+            opacity: 0; /* Mulai dengan transparan */
+            transition: opacity 1.5s ease-in-out;
+            padding: 20px;
+        }
+        
+        /* -- CSS UNTUK POP-UP -- */
+        #popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #popup-box {
+            background: linear-gradient(135deg, #ffffff, #fde4e4);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            font-family: sans-serif;
+            color: #480048;
+        }
+
+        #popup-box h2 {
+            margin-top: 0;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5em;
+        }
+
+        #nameInput {
+            width: 80%;
+            padding: 10px;
+            margin-top: 10px;
+            border: 2px solid #C04848;
+            border-radius: 8px;
+            font-size: 1.1em;
+        }
+
+        #submitName {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            background-color: #C04848;
+            color: white;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #submitName:hover {
+            background-color: #480048;
+        }
+
+        /* -- CSS UNTUK PESAN CINTA YANG BERJATUHAN -- */
+        .love-message {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            user-select: none;
+            text-shadow:
+                0 0 5px #ff69b4,
+                0 0 10px #ff69b4;
+            animation: fadeInOut forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+    </style>
+</head>
+<body>
+    
+    <audio id="background-music" loop>
+        <source src="https://files.catbox.moe/p62r83.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+
+    <div id="popup-overlay">
+        <div id="popup-box">
+            <h2>Tebak Ini Untuk Siapa?</h2>
+            <form id="nameForm">
+                <input type="text" id="nameInput" placeholder="Ketik namamu di sini..." required>
+                <br>
+                <button type="submit" id="submitName">Buka Pesan</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="love-container">
+        <h1 id="greeting"></h1>
+    </div>
+
+    <script>
+        // JavaScript untuk semua fungsionalitas
+        
+        const nameForm = document.getElementById('nameForm');
+        const popupOverlay = document.getElementById('popup-overlay');
+        const greetingElement = document.getElementById('greeting');
+        const loveContainer = document.getElementById('love-container');
+        const backgroundMusic = document.getElementById('background-music'); // Ambil elemen audio
+        let userName = '';
+
+        // 1. Menangani event saat nama di-submit
+        nameForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah halaman refresh
+            const nameInput = document.getElementById('nameInput');
+            
+            // Periksa apakah pengguna mengetik sesuatu, agar tombol berfungsi
+            if (nameInput.value.trim() !== "") {
+                // **PERUBAHAN UTAMA DI SINI**
+                // Apapun inputnya, nama yang digunakan tetap "Mona"
+                userName = "Mona";
+
+                // Sembunyikan pop-up dengan efek fade out
+                popupOverlay.style.transition = 'opacity 0.5s';
+                popupOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    popupOverlay.style.display = 'none';
+                }, 500);
+
+                // **TAMBAHAN BARU: Putar musik**
+                backgroundMusic.play();
+
+                // Mulai efek ketik
+                typeWriterEffect();
+            }
+        });
+
+        // 2. Fungsi untuk menampilkan teks huruf per huruf
+        function typeWriterEffect() {
+            const text = `Hai ${userName}, aku punya sesuatu untukmu...`;
+            let i = 0;
+            greetingElement.style.opacity = '1'; // Tampilkan elemen ucapan
+
+            const typing = setInterval(() => {
+                if (i < text.length) {
+                    greetingElement.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(typing);
+                    // Setelah selesai mengetik, tunggu sebentar lalu sembunyikan ucapan
+                    setTimeout(() => {
+                        greetingElement.style.transition = 'opacity 1.5s';
+                        greetingElement.style.opacity = '0';
+                        
+                        // Mulai hujan pesan cinta setelah ucapan hilang
+                        setTimeout(startLoveRain, 1500);
+                    }, 2000); // Tunggu 2 detik setelah selesai mengetik
+                }
+            }, 100); // Kecepatan ketik (100ms per huruf)
+        }
+
+        // 3. Fungsi untuk memulai hujan pesan cinta
+        function startLoveRain() {
+            setInterval(createLoveMessage, 150); // Buat pesan baru setiap 150ms
+        }
+        
+        // 4. Fungsi untuk membuat satu pesan cinta
+        function createLoveMessage() {
+            // Variasi pesan yang akan muncul
+            const messages = [
+                `I Love You, ${userName}`,
+                `Kamu segalanya, ${userName}`,
+                `Sayang ${userName}`,
+                `Kangen kamu, ${userName} ❤️`,
+                `${userName} ✨`,
+            ];
+        
+            const message = document.createElement('div');
+            message.classList.add('love-message');
+            // Pilih pesan secara acak dari array
+            message.textContent = messages[Math.floor(Math.random() * messages.length)];
+
+            // Atur properti acak
+            message.style.left = `${Math.random() * 100}vw`;
+            message.style.top = `${Math.random() * 100}vh`;
+            message.style.fontSize = `${Math.random() * 20 + 15}px`; // Ukuran antara 15px - 35px
+            const duration = Math.random() * 5 + 5; // Durasi animasi antara 5 - 10 detik
+            message.style.animationDuration = `${duration}s`;
+
+            loveContainer.appendChild(message);
+            
+            // Hapus elemen setelah animasi selesai agar tidak membebani browser
+            setTimeout(() => {
+                message.remove();
+            }, duration * 1000);
+        }
+    </script>
+</body>
+</html>
